@@ -33,22 +33,48 @@ public class Game {
     public Game(Player[] players){
        this.players = players;
        this.currentPlayer = 0;
-       board = new Board();
+
        this.running = true;
     }
 
-    public void Play() {
+    public void startGame() {
+        boolean keepPlaying = true;
+
+        while (keepPlaying) {
+
+            board = new Board();
+            running = true;
+            play();
+
+
+            System.out.println("Do you want to play again? (yes/no)");
+            String answer = input.next().trim().toLowerCase();
+
+            if (!answer.equals("yes")) {
+                keepPlaying = false;
+            }
+        }
+
+
+        System.out.println("Final scores:");
+        for (Player player : players) {
+            System.out.println(player.getName() + ": " + player.getScore() + " points");
+        }
+    }
+
+    public void play() {
         int turns = 0;
 
         while (running && turns < 9) {
             board.draw();
 
-            takeTurn(players[currentPlayer]);
+            takeTurn(players[currentPlayer], board);
 
             if(board.checkWin()){
                 System.out.println(players[currentPlayer].getName() + " won!");
                 running = false;
                 board.draw();
+                players[currentPlayer].increaseScore();
             }else {
 
                 currentPlayer = (currentPlayer + 1) % 2;
@@ -61,7 +87,7 @@ public class Game {
         } }
 
     }
-public void takeTurn(Player player) {
+public void takeTurn(Player player, Board board ) {
     System.out.println("Player " + player.getName() + " takes turn!");
     boolean valid = false;
     while (!valid) {
